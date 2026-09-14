@@ -226,7 +226,10 @@ end
 
 local function sanitize_filename(str)
     if not str then return "" end
-    return str:gsub("[^%w%.%-%_]", "_")
+    -- Keep non-ASCII (e.g. CJK) characters intact: UTF-8 bytes never match the
+    -- ASCII-only blacklist below. Only replace characters that are unsafe in
+    -- filenames on common filesystems (Windows-invalid chars and control chars).
+    return str:gsub("[%c/\\:*?\"<>|]", "_")
 end
 
 function Highlightsync:onSyncBookHighlights()
